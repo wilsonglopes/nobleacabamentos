@@ -387,6 +387,13 @@
                 const subtotal = Cart.getTotal();
                 const shippingPrice = selectedShipping ? Number(selectedShipping.price) : 0;
 
+                // Buscar dados completos do perfil para o Mercado Pago
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
                 const { data: order, error: orderErr } = await supabaseClient
                     .from('orders')
                     .insert({
@@ -429,6 +436,10 @@
                     body: JSON.stringify({
                         items: items,
                         order_id: order.id,
+                        user_info: {
+                            ...profile,
+                            email: user.email // Garante o e-mail da conta do Supabase
+                        },
                         shipping: selectedShipping ? {
                             id: selectedShipping.id,
                             name: selectedShipping.name,

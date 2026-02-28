@@ -17,7 +17,7 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { items, shipping, order_id } = JSON.parse(event.body);
+        const { items, shipping, order_id, user_info } = JSON.parse(event.body);
         const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
         if (!MP_ACCESS_TOKEN) {
@@ -44,6 +44,30 @@ exports.handler = async (event, context) => {
             });
         }
 
+        // Prepare Payer data if available
+        let payerData = {};
+        if (user_info) {
+            const nameParts = (user_info.full_name || '').split(' ');
+            const firstName = nameParts[0] || 'Cliente';
+            const lastName = nameParts.slice(1).join(' ') || 'Noble';
+            const doc = (user_info.cpf_cnpj || '').replace(/\D/g, '');
+
+            payerData = {
+                name: firstName,
+                surname: lastName,
+                email: user_info.email || '',
+                identification: {
+                    type: doc.length > 11 ? 'CNPJ' : 'CPF',
+                    number: doc
+                },
+                address: {
+                    zip_code: (user_info.cep || '').replace(/\D/g, ''),
+                    street_name: user_info.logradouro || '',
+                    street_number: parseInt(user_info.numero) || 0
+                }
+            };
+        }
+
         // Determine base URL for back_urls
         const protocol = event.headers['x-forwarded-proto'] || 'http';
         const host = event.headers['host'];
@@ -57,6 +81,7 @@ exports.handler = async (event, context) => {
             },
             body: JSON.stringify({
                 items: mpItems,
+                payer: user_info ? payerData : undefined,
                 external_reference: order_id || '', // Linked to the order ID in Supabase
                 back_urls: {
                     success: `${baseUrl}/loja.html?status=success&order_id=${order_id || ''}`,

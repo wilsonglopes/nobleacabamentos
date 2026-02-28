@@ -340,6 +340,16 @@
             btn.disabled = true;
 
             try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error('Usuário não logado');
+
+                // Buscar dados completos do perfil para o Mercado Pago
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
                 const endpoint = '/.netlify/functions/mercadopago-checkout';
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -347,6 +357,10 @@
                     body: JSON.stringify({
                         items: order.order_items,
                         order_id: order.id,
+                        user_info: {
+                            ...profile,
+                            email: user.email // Garante o e-mail da conta do Supabase
+                        },
                         shipping: {
                             id: order.shipping_method_id,
                             name: order.shipping_method_name,
