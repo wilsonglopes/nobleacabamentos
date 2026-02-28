@@ -205,6 +205,8 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             const alertBox = document.getElementById('profile-alert');
             const checkoutBtn = document.getElementById('checkout-btn');
+            const shippingSection = document.getElementById('shipping-section');
+            const shippingCepInput = document.getElementById('shipping-cep');
 
             if (!user) {
                 if (checkoutBtn) {
@@ -214,31 +216,42 @@
                 return;
             }
 
+            // Sempre mostra a seção de frete para usuários logados, mesmo se o perfil estiver incompleto, se houver itens
+            if (Cart.getItems().length > 0) {
+                shippingSection.style.display = 'block';
+            }
+
             const { data: profile } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();
 
-            const isComplete = profile && profile.cpf_cnpj && profile.cep && profile.numero && profile.phone;
+            if (profile) {
+                const isComplete = profile.cpf_cnpj && profile.cep && profile.numero && profile.phone;
 
-            if (!isComplete) {
-                alertBox.style.display = 'block';
-                if (checkoutBtn) {
-                    checkoutBtn.disabled = true;
-                    checkoutBtn.title = 'Complete seu cadastro para continuar';
+                if (!isComplete) {
+                    alertBox.style.display = 'block';
+                    if (checkoutBtn) {
+                        checkoutBtn.disabled = true;
+                        checkoutBtn.title = 'Complete seu cadastro para continuar';
+                    }
+                } else {
+                    alertBox.style.display = 'none';
+                    if (checkoutBtn) {
+                        checkoutBtn.disabled = false;
+                        checkoutBtn.onclick = startCheckout;
+                    }
+                    isProfileValid = true;
                 }
-            } else {
-                alertBox.style.display = 'none';
-                if (checkoutBtn) {
-                    checkoutBtn.disabled = false;
-                    checkoutBtn.onclick = startCheckout;
-                }
-                isProfileValid = true;
-                document.getElementById('shipping-section').style.display = 'block';
+
                 if (profile.cep) {
-                    document.getElementById('shipping-cep').value = profile.cep;
-                    calculateShipping(); // Auto-calcula se já tem o CEP
+                    shippingCepInput.value = profile.cep;
+                    console.log("CEP detectado no perfil:", profile.cep);
+                    // Só calcula se o carrinho não estiver vazio
+                    if (Cart.getItems().length > 0) {
+                        calculateShipping();
+                    }
                 }
             }
         }
