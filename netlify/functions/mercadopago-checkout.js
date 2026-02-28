@@ -17,20 +17,32 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { items } = JSON.parse(event.body);
+        const { items, shipping, order_id } = JSON.parse(event.body);
         const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
         if (!MP_ACCESS_TOKEN) {
             throw new Error('MP_ACCESS_TOKEN not configured');
         }
 
+        // Map product items
         const mpItems = items.map(item => ({
-            id: item.id,
+            id: item.id || item.product_id, // Handles both cart items and order items
             title: item.name,
             unit_price: Number(item.price),
             quantity: Number(item.quantity),
             currency_id: 'BRL',
         }));
+
+        // Add shipping as an item if present
+        if (shipping && Number(shipping.price) > 0) {
+            mpItems.push({
+                id: 'shipping-' + (shipping.id || 'default'),
+                title: 'Frete: ' + (shipping.name || 'Entrega'),
+                unit_price: Number(shipping.price),
+                quantity: 1,
+                currency_id: 'BRL'
+            });
+        }
 
         // Determine base URL for back_urls
         const protocol = event.headers['x-forwarded-proto'] || 'http';
@@ -45,10 +57,11 @@ exports.handler = async (event, context) => {
             },
             body: JSON.stringify({
                 items: mpItems,
+                external_reference: order_id || '', // Linked to the order ID in Supabase
                 back_urls: {
-                    success: `${baseUrl}/loja.html?status=success`,
-                    failure: `${baseUrl}/loja.html?status=failure`,
-                    pending: `${baseUrl}/loja.html?status=pending`,
+                    success: `${baseUrl}/loja.html?status=success&order_id=${order_id || ''}`,
+                    failure: `${baseUrl}/loja.html?status=failure&order_id=${order_id || ''}`,
+                    pending: `${baseUrl}/loja.html?status=pending&order_id=${order_id || ''}`,
                 },
                 auto_return: "approved"
             }),

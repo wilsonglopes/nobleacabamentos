@@ -322,10 +322,51 @@
                     </div>
                     <div class="order-footer">
                         <p style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">Total: R$ ${Number(order.total_amount).toFixed(2).replace('.', ',')}</p>
-                        <button class="btn btn-sm" onclick='repeatOrder(${JSON.stringify(order.order_items)})'>Repetir Pedido</button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${order.status === 'pendente' ? `
+                                <button class="btn btn-sm" onclick='payOrder(${JSON.stringify(order)})' style="background: #27ae60;">Pagar Agora</button>
+                            ` : ''}
+                            <button class="btn btn-sm" onclick='repeatOrder(${JSON.stringify(order.order_items)})'>Repetir Pedido</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        async function payOrder(order) {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Carregando...';
+            btn.disabled = true;
+
+            try {
+                const endpoint = '/.netlify/functions/mercadopago-checkout';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: order.order_items,
+                        order_id: order.id,
+                        shipping: {
+                            id: order.shipping_method_id,
+                            name: order.shipping_method_name,
+                            price: order.shipping_cost
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    throw new Error(data.error || 'Erro ao gerar link de pagamento');
+                }
+            } catch (err) {
+                console.error('Erro ao processar pagamento:', err);
+                alert('Erro ao redirecionar para o pagamento: ' + err.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         }
 
         function repeatOrder(items) {

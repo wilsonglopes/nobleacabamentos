@@ -428,6 +428,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         items: items,
+                        order_id: order.id,
                         shipping: selectedShipping ? {
                             id: selectedShipping.id,
                             name: selectedShipping.name,
