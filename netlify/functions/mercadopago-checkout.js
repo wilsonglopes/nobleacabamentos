@@ -63,7 +63,10 @@ exports.handler = async (event, context) => {
                 address: {
                     zip_code: (user_info.cep || '').replace(/\D/g, ''),
                     street_name: user_info.logradouro || '',
-                    street_number: parseInt(user_info.numero) || 0
+                    street_number: parseInt(user_info.numero) || 0,
+                    neighborhood: user_info.bairro || '',
+                    city: user_info.cidade || '',
+                    federal_unit: user_info.uf || ''
                 }
             };
         }
