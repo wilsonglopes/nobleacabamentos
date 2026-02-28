@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quem Somos | Noble Acabamentos</title>
+    <meta name="description"
+        content="Conheça a história e os valores da Noble Acabamentos, especialista em acabamentos para telhados em Cocal do Sul.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <script src="cart.js"></script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1542888320142112', {}, { test_event_code: 'TEST59151' });
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1542888320142112&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="assets/logo_na.png" alt="Noble Acabamentos Logo" style="height: 50px;">
+                    <div class="logo-text">
+                        <span class="noble">NOBLE</span>
+                        <span class="acabamentos">ACABAMENTOS</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="loja.html">Loja</a></li>
+                    <li><a href="quem-somos.html">Quem Somos</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                    <li id="auth-link"><a href="login.html" class="btn btn-sm" style="padding: 0.5rem 1rem;">Login</a>
+                    </li>
+                    <li>
+                        <a href="carrinho.html" class="cart-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1" />
+                                <circle cx="20" cy="21" r="1" />
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            </svg>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero"
+        style="height: 60vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('assets/hero_roofing.jpg'); background-size: cover; background-position: center;">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Nossa História</h1>
+                <p>Paixão pela arquitetura e compromisso com a excelência desde a fundação.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="grid" style="align-items: center; gap: 4rem;">
+                <div>
+                    <h2 style="margin-bottom: 2rem;">Experiência e Tecnologia</h2>
+                    <p style="margin-bottom: 1.5rem;">A Noble Acabamentos para Telhados foi constituída com um corpo
+                        técnico formado por profissionais com mais de 50 anos de experiência na área técnica de
+                        cerâmica.</p>
+                    <p style="margin-bottom: 1.5rem;">Trabalhamos com fornos elétricos de alta tecnologia, que realizam
+                        o cozimento a 1200 °C com zero emissão de gases na atmosfera, garantindo qualidade superior e
+                        total respeito ao meio ambiente.</p>
+                    <p style="margin-bottom: 1.5rem;">Nossa empresa tem orgulho de atuar de forma sustentável, adotando
+                        processos de reaproveitamento de resíduos industriais em circuito fechado, eliminando a emissão
+                        de poluentes e reduzindo impactos ambientais.</p>
+                    <p>Compromisso técnico, inovação e responsabilidade ambiental são os pilares que sustentam a Noble
+                        Acabamentos.</p>
+                </div>
+                <div>
+                    <img src="assets/roof_tile_detail.jpg" alt="Detalhe de Telhado"
+                        style="width: 100%; border-radius: 8px; box-shadow: var(--shadow);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background-color: var(--white);">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 4rem;">Nossos Valores</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Qualidade</h3>
+                    <p>Com laboratório próprio e um corpo técnico com 50 anos de experiência, mantemos um controle
+                        rigoroso de queima a 1200°C. Um rigoroso controle dos parâmetros como densidade e viscosidade
+                        das barbotinas e esmaltes cerâmicos proporcionam um produto final de alta resistência e cores
+                        corretas de cada fabricante.</p>
+                </div>
+                <div class="card">
+                    <h3>Responsabilidade</h3>
+                    <p>Nosso compromisso com o meio ambiente é absoluto, utilizando fornos elétricos de alta tecnologia
+                        que garantem zero emissão de gases poluentes. Atuamos com responsabilidade social e ambiental,
+                        assegurando que cada etapa da nossa produção siga os mais altos padrões de ética e preservação
+                        da natureza.</p>
+                </div>
+                <div class="card">
+                    <h3>Sustentabilidade</h3>
+                    <p>Operamos em um sistema de circuito fechado com reaproveitamento total de resíduos industriais e
+                        tratamento de água. Nossa filosofia industrial foca na economia circular, reduzindo
+                        drasticamente o impacto ambiental e transformando subprodutos em novos recursos, garantindo um
+                        futuro mais limpo e consciente.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h4>Noble Acabamentos</h4>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 1rem;">Beleza e proteção para o
+                        seu lar.</p>
+                </div>
+                <div>
+                    <h4>Links Úteis</h4>
+                    <ul style="list-style: none; margin-top: 1rem;">
+                        <li><a href="legal.html" style="font-size: 0.9rem; color: var(--text-light);">Termos e
+                                Condições</a></li>
+                        <li><a href="legal.html" style="font-size: 0.9rem; color: var(--text-light);">Política de
+                                Privacidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Noble Acabamentos. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xpoktmqxmgduginmqojf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhwb2t0bXF4bWdkdWdpbm1xb2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODUyODMsImV4cCI6MjA4NzM2MTI4M30.Zkn5oXvHzqAvOyIrEUQeRLFto_dibEQo9ynBqtidQv8';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function updateAuthButton() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const authLink = document.getElementById('auth-link');
+            if (session) {
+                authLink.innerHTML = `<a href="painel.html" class="btn btn-sm" style="padding: 0.5rem 1rem;">Minha Conta</a>`;
+            } else {
+                authLink.innerHTML = `<a href="login.html" class="btn btn-sm" style="padding: 0.5rem 1rem;">Login</a>`;
+            }
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', updateAuthButton);
+    </script>
+    <!-- Botão Flutuante WhatsApp -->
+    <a href="https://wa.me/5548988799001" class="whatsapp-float" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
+        </svg>
+    </a>
+</body>
+
+</html>

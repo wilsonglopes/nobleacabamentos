@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho | Noble Acabamentos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <script src="cart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .cart-container {
+            padding-top: 150px;
+            padding-bottom: 100px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-table th {
+            background: #f8f9fa;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cart-product {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-product img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .cart-total-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .total-row {
+            display: flex;
+            gap: 2rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-table thead {
+                display: none;
+            }
+
+            .cart-table tr {
+                display: block;
+                margin-bottom: 1rem;
+            }
+
+            .cart-table td {
+                display: block;
+                text-align: right;
+                border: none;
+            }
+
+            .cart-table td::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+                color: var(--text-light);
+            }
+        }
+    </style>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1542888320142112', {}, { test_event_code: 'TEST59151' });
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1542888320142112&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="assets/logo_na.png" alt="Noble Acabamentos Logo" style="height: 50px;">
+                    <div class="logo-text">
+                        <span class="noble">NOBLE</span>
+                        <span class="acabamentos">ACABAMENTOS</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="loja.html">Loja</a></li>
+                    <li><a href="quem-somos.html">Quem Somos</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                    <li>
+                        <a href="carrinho.html" class="cart-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1" />
+                                <circle cx="20" cy="21" r="1" />
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            </svg>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container cart-container">
+        <h1>Seu Carrinho</h1>
+
+        <!-- Alerta de Perfil Incompleto -->
+        <div id="profile-alert"
+            style="display: none; background: #fff3cd; color: #856404; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #ffeeba;">
+            <p><strong>Ação Necessária:</strong> Para calcular o frete e finalizar a compra, você precisa completar seu
+                cadastro com endereço e CPF.</p>
+            <a href="perfil.html?redirect=carrinho.html" class="btn btn-sm"
+                style="margin-top: 1rem; background: #856404; border: none;">Completar Cadastro</a>
+        </div>
+
+        <div id="shipping-section"
+            style="display: none; margin: 1rem 0; background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+            <h3>Simular Frete</h3>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem; align-items: center;">
+                <input type="text" id="shipping-cep" placeholder="00000-000"
+                    style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; width: 150px;">
+                <button onclick="calculateShipping()" class="btn btn-sm">Calcular</button>
+            </div>
+            <div id="shipping-options" style="margin-top: 1rem;">
+                <!-- Opções de frete via JS -->
+            </div>
+        </div>
+
+        <div id="cart-content">
+            <!-- Gerado via JS -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://xpoktmqxmgduginmqojf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhwb2t0bXF4bWdkdWdpbm1xb2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODUyODMsImV4cCI6MjA4NzM2MTI4M30.Zkn5oXvHzqAvOyIrEUQeRLFto_dibEQo9ynBqtidQv8';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let isProfileValid = false;
+        let selectedShipping = null;
+
+        async function checkAuthAndProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const alertBox = document.getElementById('profile-alert');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            if (!user) {
+                if (checkoutBtn) {
+                    checkoutBtn.textContent = 'Fazer Login para Comprar';
+                    checkoutBtn.onclick = () => window.location.href = 'login.html?redirect=carrinho.html';
+                }
+                return;
+            }
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            const isComplete = profile && profile.cpf_cnpj && profile.cep && profile.numero && profile.phone;
+
+            if (!isComplete) {
+                alertBox.style.display = 'block';
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.title = 'Complete seu cadastro para continuar';
+                }
+            } else {
+                alertBox.style.display = 'none';
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.onclick = startCheckout;
+                }
+                isProfileValid = true;
+                document.getElementById('shipping-section').style.display = 'block';
+                if (profile.cep) {
+                    document.getElementById('shipping-cep').value = profile.cep;
+                    calculateShipping(); // Auto-calcula se já tem o CEP
+                }
+            }
+        }
+
+        function renderCart() {
+            const items = Cart.getItems();
+            const container = document.getElementById('cart-content');
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <p style="font-size: 1.2rem; color: var(--text-light);">Seu carrinho está vazio.</p>
+                        <a href="loja.html" class="btn" style="margin-top: 2rem;">Voltar para a Loja</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Subtotal</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            items.forEach(item => {
+                html += `
+                    <tr>
+                        <td data-label="Produto">
+                            <div class="cart-product">
+                                <img src="${item.image_url}" alt="${item.name}">
+                                <div>
+                                    <p style="font-weight: 600;">${item.name}</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-light);">${item.brand} | ${item.color}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Quantidade">
+                            <div class="qty-controls" style="display: inline-flex;">
+                                <button class="qty-btn" onclick="updateItemQty('${item.id}', -1)">-</button>
+                                <input type="number" class="qty-input" value="${item.quantity}" readonly>
+                                <button class="qty-btn" onclick="updateItemQty('${item.id}', 1)">+</button>
+                            </div>
+                        </td>
+                        <td data-label="Subtotal">
+                            <p style="font-weight: 600;">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                        </td>
+                        <td data-label="Ações">
+                            <button onclick="removeItem('${item.id}')" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.8rem;">Remover</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+            const subtotal = Cart.getTotal();
+            const shippingPrice = selectedShipping ? Number(selectedShipping.price) : 0;
+            const total = subtotal + shippingPrice;
+
+            html += `
+                <div class="cart-total-section">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    ${selectedShipping ? `
+                    <div class="total-row" style="color: var(--primary);">
+                        <span>Frete (${selectedShipping.name}):</span>
+                        <span>R$ ${shippingPrice.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    ` : ''}
+                    <div class="total-row" style="font-size: 1.5rem; border-top: 2px solid #eee; padding-top: 1rem;">
+                        <span>Total:</span>
+                        <span>R$ ${total.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <button id="checkout-btn" onclick="startCheckout()" class="btn" style="width: 300px; font-size: 1.2rem;">Finalizar Compra</button>
+                    <a href="loja.html" style="color: var(--text-light); font-size: 0.9rem; margin-top: 1rem; display: block;">Continuar Comprando</a>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            checkAuthAndProfile();
+        }
+
+        function updateItemQty(id, delta) {
+            const items = Cart.getItems();
+            const item = items.find(i => i.id === id);
+            if (item) {
+                Cart.updateQuantity(id, item.quantity + delta);
+                renderCart();
+            }
+        }
+
+        function removeItem(id) {
+            Cart.removeItem(id);
+            renderCart();
+        }
+
+        async function startCheckout() {
+            // Dispara evento do Facebook Pixel
+            if (typeof fbq === 'function') {
+                fbq('track', 'InitiateCheckout', {
+                    content_ids: Cart.getItems().map(i => i.id),
+                    content_type: 'product',
+                    value: Cart.getTotal(),
+                    currency: 'BRL'
+                });
+            }
+
+            const btn = document.getElementById('checkout-btn');
+            btn.textContent = 'Processando...';
+            btn.disabled = true;
+
+            const items = Cart.getItems();
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html?redirect=carrinho.html';
+                    return;
+                }
+
+                // 1. Salvar Pedido no Banco de Dados (Status Inicial: Pending)
+                const subtotal = Cart.getTotal();
+                const shippingPrice = selectedShipping ? Number(selectedShipping.price) : 0;
+
+                const { data: order, error: orderErr } = await supabaseClient
+                    .from('orders')
+                    .insert({
+                        user_id: user.id,
+                        total_amount: subtotal + shippingPrice,
+                        status: 'pendente',
+                        shipping_method_id: selectedShipping ? selectedShipping.id : null,
+                        shipping_method_name: selectedShipping ? selectedShipping.name : null,
+                        shipping_cost: shippingPrice
+                    })
+                    .select()
+                    .single();
+
+                if (orderErr) throw orderErr;
+
+                // 2. Salvar Itens do Pedido
+                const orderItems = items.map(item => ({
+                    order_id: order.id,
+                    product_id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image_url: item.image_url,
+                    brand: item.brand,
+                    color: item.color
+                }));
+
+                const { error: itemsErr } = await supabaseClient
+                    .from('order_items')
+                    .insert(orderItems);
+
+                if (itemsErr) throw itemsErr;
+
+                // 3. Gerar Link do Mercado Pago
+                const endpoint = '/.netlify/functions/mercadopago-checkout';
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: items,
+                        shipping: selectedShipping ? {
+                            id: selectedShipping.id,
+                            name: selectedShipping.name,
+                            price: selectedShipping.price
+                        } : null
+                    })
+                });
+
+                const data = await response.json();
+                if (data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    throw new Error('URL de checkout não recebida');
+                }
+            } catch (err) {
+                console.error('Erro no checkout:', err);
+                alert('Erro ao processar pedido: ' + err.message);
+                btn.textContent = 'Finalizar Compra';
+                btn.disabled = false;
+            }
+        }
+
+        async function calculateShipping() {
+            const cep = document.getElementById('shipping-cep').value.replace(/\D/g, '');
+            const optionsDiv = document.getElementById('shipping-options');
+
+            if (cep.length !== 8) {
+                alert('Digite um CEP válido.');
+                return;
+            }
+
+            optionsDiv.innerHTML = '<p>Calculando opções de entrega...</p>';
+
+            try {
+                const endpoint = '/.netlify/functions/melhorenvio-calculate';
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ zip: cep, items: Cart.getItems() })
+                });
+
+                const data = await response.json();
+
+                // Se o servidor retornou erro
+                if (data.error) throw new Error(data.error);
+
+                const options = data.options || [];
+                const debugInfo = data.debug || [];
+
+                console.log("DEBUG FRETE:", debugInfo);
+
+                if (options.length === 0) {
+                    optionsDiv.innerHTML = '<p>Nenhuma opção de frete disponível para este CEP.</p>';
+                    return;
+                }
+
+                optionsDiv.innerHTML = options.map(opt => `
+                    <div class="shipping-option" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid #eee; margin-top: 0.5rem; border-radius: 8px; cursor: pointer; transition: 0.3s;" onclick="selectShipping(${JSON.stringify(opt).replace(/"/g, '&quot;')})">
+                        <input type="radio" name="shipping" value="${opt.id}" ${selectedShipping && selectedShipping.id === opt.id ? 'checked' : ''}>
+                        <img src="${opt.company.picture}" alt="${opt.company.name}" style="height: 24px;">
+                        <div style="flex: 1;">
+                            <p style="font-weight: 600;">${opt.name}</p>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">${opt.delivery_time} dias úteis</p>
+                        </div>
+                        <p style="font-weight: 800;">R$ ${Number(opt.price).toFixed(2).replace('.', ',')}</p>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('Erro ao calcular frete:', err);
+                optionsDiv.innerHTML = '<p>Erro ao calcular frete. Tente novamente.</p>';
+            }
+        }
+
+        function selectShipping(opt) {
+            selectedShipping = opt;
+            renderCart(); // Re-render para atualizar os totais
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+</body>
+
+</html>
