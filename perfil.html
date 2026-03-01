@@ -10,6 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "voz8860kq1");
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-58G5330J5L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-58G5330J5L');
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .profile-container {
@@ -142,9 +160,13 @@
 
             <form id="profile-form">
                 <div class="form-grid">
-                    <div class="form-group full-width">
+                    <div class="form-group">
                         <label>Nome Completo</label>
                         <input type="text" id="full_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="email" readonly style="background: #f8f9fa; cursor: not-allowed;">
                     </div>
                     <div class="form-group">
                         <label>CPF ou CNPJ</label>
@@ -215,6 +237,7 @@
 
             if (profile) {
                 document.getElementById('full_name').value = profile.full_name || '';
+                document.getElementById('email').value = user.email || '';
                 document.getElementById('cpf_cnpj').value = profile.cpf_cnpj || '';
                 document.getElementById('phone').value = profile.phone || '';
                 document.getElementById('cep').value = profile.cep || '';
@@ -224,6 +247,10 @@
                 document.getElementById('bairro').value = profile.bairro || '';
                 document.getElementById('cidade').value = profile.cidade || '';
                 document.getElementById('uf').value = profile.uf || '';
+            } else {
+                // If no profile yet, at least fill the email from auth
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('full_name').value = user.user_metadata?.full_name || '';
             }
 
             loader.style.display = 'none';
@@ -285,6 +312,7 @@
 
             const formData = {
                 full_name: document.getElementById('full_name').value,
+                email: currentUser.email,
                 cpf_cnpj: document.getElementById('cpf_cnpj').value,
                 phone: document.getElementById('phone').value,
                 cep: document.getElementById('cep').value,
