@@ -5,6 +5,7 @@ exports.handler = async (event, context) => {
     const FB_PIXEL_ID = process.env.FB_PIXEL_ID;
 
     if (!FB_ACCESS_TOKEN || !FB_PIXEL_ID) {
+        console.error('ERROR: Missing environment variables. TOKEN length:', FB_ACCESS_TOKEN ? FB_ACCESS_TOKEN.length : 0);
         console.error('ERROR: Missing environment variables');
         return {
             statusCode: 200,
