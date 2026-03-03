@@ -248,29 +248,21 @@
 
                     if (dbError) throw dbError;
 
-                    // 2. Send Email via FormSubmit
-                    const response = await fetch('https://formsubmit.co/ajax/nobleacabamentos@gmail.com', {
+                    // 2. Send Professional Email via Netlify Function
+                    const response = await fetch('/.netlify/functions/send-contact', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            "Nome": formData.full_name,
-                            "E-mail": formData.email,
-                            "Assunto": formData.subject,
-                            "Mensagem": formData.message,
-                            _subject: `Novo Contato Noble: ${formData.subject}`,
-                            _template: 'table',
-                            _language: 'pt-BR',
-                            _captcha: 'false'
-                        })
+                        body: JSON.stringify(formData)
                     });
 
                     const result = await response.json();
-                    console.log('FormSubmit response:', result);
+                    if (!response.ok) throw new Error(result.error || 'Erro no envio do e-mail');
 
-                    formStatus.innerText = 'Mensagem enviada com sucesso! Verifique seu e-mail para ativar o serviço no primeiro envio.';
+                    console.log('Email sent successfully:', result);
+
+                    formStatus.innerText = 'Mensagem enviada com sucesso! Em breve entraremos em contato.';
                     formStatus.style.color = '#27ae60';
                     formStatus.style.display = 'block';
                     contactForm.reset();
