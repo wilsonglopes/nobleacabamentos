@@ -12,8 +12,27 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { zip, items } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        const { zip, items } = body;
+
+        if (!zip || !items || !Array.isArray(items) || items.length === 0) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: "CEP de destino e itens são obrigatórios." })
+            };
+        }
+
         const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ME_TOKEN, STORE_ORIGIN_CEP, USE_SANDBOX } = process.env;
+
+        if (!ME_TOKEN || !STORE_ORIGIN_CEP) {
+            console.error("Missing environment variables: ME_TOKEN or STORE_ORIGIN_CEP");
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ error: "Configuração do servidor incompleta (ME_TOKEN/CEP)." })
+            };
+        }
 
         const ME_URL = USE_SANDBOX === 'true' ? "https://sandbox.melhorenvio.com.br" : "https://www.melhorenvio.com.br";
 
@@ -24,6 +43,12 @@ exports.handler = async (event) => {
                 'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
             }
         });
+
+        if (!supabaseRes.ok) {
+            const errText = await supabaseRes.text();
+            throw new Error(`Erro ao buscar produtos no Supabase: ${errText}`);
+        }
+
         const dbProducts = await supabaseRes.json();
 
         // Intelligent Volume Splitting (30kg buckets)
@@ -57,14 +82,13 @@ exports.handler = async (event) => {
                     const widthCount = Math.min(maxAcross, Math.ceil(Math.sqrt(currentQty)));
                     const heightCount = Math.ceil(currentQty / widthCount);
 
+                    // MELHOR ENVIO MIN DIMENSIONS: 15x2x15
                     volumes.push({
-                        id: `${item.id}_vol_${volumes.length}`,
-                        width: unitWi * widthCount,
-                        height: unitH * heightCount,
-                        length: unitL,
-                        weight: (unitW * currentQty) / 1000,
-                        insurance_value: Number(item.price) * currentQty,
-                        quantity: 1
+                        width: Math.max(15, unitWi * widthCount),
+                        height: Math.max(2, unitH * heightCount),
+                        length: Math.max(15, unitL),
+                        weight: Math.max(0.1, (unitW * currentQty) / 1000),
+                        insurance_value: Number(item.price) * currentQty
                     });
                     remainingQty -= currentQty;
                 }
@@ -72,7 +96,7 @@ exports.handler = async (event) => {
             return volumes;
         };
 
-        const mappedProducts = splitIntoVolumes(items, dbProducts);
+        const finalVolumes = splitIntoVolumes(items, dbProducts);
 
         const meRes = await fetch(`${ME_URL}/api/v2/me/shipment/calculate`, {
             method: 'POST',
@@ -83,14 +107,21 @@ exports.handler = async (event) => {
                 'User-Agent': 'NobleAcabamentos'
             },
             body: JSON.stringify({
-                from: { postal_code: STORE_ORIGIN_CEP },
-                to: { postal_code: zip },
-                products: mappedProducts
+                from: { postal_code: STORE_ORIGIN_CEP.replace(/\D/g, '') },
+                to: { postal_code: zip.replace(/\D/g, '') },
+                volumes: finalVolumes
             })
         });
 
+        if (!meRes.ok) {
+            const meErrorText = await meRes.text();
+            console.error("Melhor Envio API Error:", meErrorText);
+            throw new Error(`Erro na API do Melhor Envio: ${meRes.status} ${meErrorText}`);
+        }
+
         const meData = await meRes.json();
-        const options = (meData || [])
+
+        const options = (Array.isArray(meData) ? meData : [])
             .filter(opt => !opt.error && !opt.name.toLowerCase().includes('centralizado'))
             .map(opt => ({
                 id: opt.id,
@@ -104,7 +135,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ options, debug: mappedProducts })
+            body: JSON.stringify({ options, debug: finalVolumes })
         };
     } catch (error) {
         console.error('Error calculating shipping:', error);

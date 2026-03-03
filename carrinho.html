@@ -28,8 +28,10 @@
         gtag('js', new Date());
         gtag('config', 'G-58G5330J5L');
     </script>
-    <script src="cart.js"></script>
+    <script src="/cart.js"></script>
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/config.js"></script>
     <style>
         .cart-container {
             padding-top: 150px;
@@ -210,9 +212,15 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Client initialization is handled in the scripts below -->
     <script>
-        const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.CONFIG;
+        // Use global CONFIG from config.js with a fallback to avoid crashes
+        const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.CONFIG || { SUPABASE_URL: '', SUPABASE_ANON_KEY: '' };
+
+        if (!SUPABASE_URL) {
+            console.error('Erro: window.CONFIG não foi carregado corretamente. Verifique se o arquivo /config.js está presente.');
+        }
+
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let isProfileValid = false;
