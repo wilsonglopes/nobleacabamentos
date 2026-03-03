@@ -13,6 +13,17 @@ exports.handler = async (event) => {
     }
 
     try {
+        const { full_name, email, subject, message } = JSON.parse(event.body);
+        const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+        if (!RESEND_API_KEY) {
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ error: "Configuração do servidor incompleta (RESEND_API_KEY)." })
+            };
+        }
+
         // Get Base URL for assets
         const protocol = event.headers['x-forwarded-proto'] || 'http';
         const host = event.headers['host'];
