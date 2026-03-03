@@ -918,8 +918,9 @@
                                 </div>
                                 <strong style="font-size: 1.1rem;">Meta Pixel (Facebook)</strong>
                             </div>
-                            <button class="btn btn-sm" style="padding: 4px 10px; font-size: 0.75rem;"
-                                onclick="alert('Meta Business Manager: Conexão pendente de Access Token.')">Conectar</button>
+                            <button id="fb-connect-btn" class="btn btn-sm"
+                                style="padding: 4px 10px; font-size: 0.75rem;"
+                                onclick="alert('Meta Business Manager: Conexão pendente de Access Token nas Configurações da Netlify.')">Conectar</button>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
@@ -1852,6 +1853,7 @@
                 const eventsEl = document.getElementById('fb-events-today');
                 const purchasesEl = document.getElementById('fb-purchases-today');
                 const badgeEl = document.getElementById('fb-status-badge');
+                const btnEl = document.getElementById('fb-connect-btn');
 
                 if (data.connected) {
                     eventsEl.firstChild.textContent = `${data.events_today} `;
@@ -1859,8 +1861,14 @@
                     badgeEl.textContent = 'Conectado';
                     badgeEl.style.background = 'rgba(39, 174, 96, 0.1)';
                     badgeEl.style.color = '#27ae60';
+
+                    if (btnEl) {
+                        btnEl.textContent = 'Configurado';
+                        btnEl.style.background = 'rgba(39, 174, 96, 0.1)';
+                        btnEl.style.color = '#27ae60';
+                        btnEl.onclick = () => alert('O Meta Pixel está conectado e recebendo dados reais!');
+                    }
                 } else {
-                    // Stay in demo mode or show error if specifically missing keys
                     console.log('FB API not connected:', data.error);
                 }
             } catch (err) {
