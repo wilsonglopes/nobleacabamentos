@@ -1203,6 +1203,27 @@
                     </table>
                 </div>
 
+                <!-- Shipping Section -->
+                <div id="ms-shipping-section"
+                    style="margin-bottom: 2rem; padding: 1.5rem; border: 1px solid #eee; border-radius: 12px; background: rgba(211, 84, 0, 0.02);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1rem; margin-bottom: 0;">Frete e Entrega</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="text" id="ms-shipping-cep" placeholder="00000-000"
+                                style="padding: 0.5rem; border-radius: 6px; border: 1px solid #ddd; width: 120px; font-size: 0.85rem;">
+                            <button type="button" class="btn btn-sm" onclick="calculateManualShipping()"
+                                style="padding: 4px 12px; font-size: 0.75rem;">Calcular Frete</button>
+                        </div>
+                    </div>
+                    <div id="ms-shipping-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <!-- Via JS -->
+                        <p
+                            style="grid-column: span 2; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                            Preencha o CEP e adicione produtos para carregar opções.</p>
+                    </div>
+                </div>
+
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: var(--sidebar-bg); color: white; padding: 1.5rem; border-radius: 12px;">
                     <div>
@@ -2136,9 +2157,12 @@
         }
         // Manual Sale Logic
         let manualSaleItems = [];
+        let selectedManualShipping = null;
 
         function openManualSaleModal() {
             manualSaleItems = [];
+            selectedManualShipping = null;
+            document.getElementById('ms-shipping-options').innerHTML = '<p style="grid-column: span 2; font-size: 0.85rem; color: var(--text-muted); text-align: center;">Preencha o CEP e adicione produtos para carregar opções.</p>';
             renderManualSaleItems();
 
             document.getElementById('manual-sale-form').reset();
@@ -2150,6 +2174,14 @@
             allCustomers.forEach(c => {
                 customerSelect.innerHTML += `<option value="${c.id}">${c.full_name || 'N/A'} (${c.email || 'N/A'})</option>`;
             });
+
+            // Customer selection change - Auto CEP
+            customerSelect.onchange = (e) => {
+                const customer = allCustomers.find(c => c.id === e.target.value);
+                if (customer && customer.cep) {
+                    document.getElementById('ms-shipping-cep').value = customer.cep;
+                }
+            };
 
             // Populate Product Select
             const productSelect = document.getElementById('ms-product-select');
@@ -2200,18 +2232,18 @@
         function renderManualSaleItems() {
             const tbody = document.getElementById('ms-items-list');
             tbody.innerHTML = '';
-            let total = 0;
+            let subtotal = 0;
 
             manualSaleItems.forEach((item, index) => {
-                const subtotal = item.price * item.quantity;
-                total += subtotal;
+                const sub = item.price * item.quantity;
+                subtotal += sub;
 
                 tbody.innerHTML += `
                             <tr>
                                 <td>${item.name} (${item.color})</td>
                                 <td>${item.quantity}</td>
                                 <td>R$ ${Number(item.price).toFixed(2).replace('.', ',')}</td>
-                                <td>R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+                                <td>R$ ${sub.toFixed(2).replace('.', ',')}</td>
                                 <td>
                                     <button type="button" class="btn btn-outline" style="padding: 0.2rem; color: var(--danger);" onclick="removeProductFromSale(${index})">
                                         <i data-lucide="trash-2" style="width: 14px;"></i>
@@ -2221,8 +2253,61 @@
                         `;
             });
 
+            const shippingPrice = selectedManualShipping ? Number(selectedManualShipping.price) : 0;
+            const total = subtotal + shippingPrice;
+
             document.getElementById('ms-total-display').textContent = `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
             lucide.createIcons();
+        }
+
+        async function calculateManualShipping() {
+            const cep = document.getElementById('ms-shipping-cep').value.replace(/\D/g, '');
+            const optionsDiv = document.getElementById('ms-shipping-options');
+
+            if (cep.length !== 8) return alert('Digite um CEP válido');
+            if (manualSaleItems.length === 0) return alert('Adicione produtos para calcular o frete');
+
+            optionsDiv.innerHTML = '<p style="grid-column: span 2; text-align: center; font-size: 0.85rem;">Calculando...</p>';
+
+            try {
+                const response = await fetch('/.netlify/functions/melhorenvio-calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        zip: cep,
+                        items: manualSaleItems.map(i => ({ id: i.id, quantity: i.quantity, price: i.price }))
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                const options = data.options || [];
+                if (options.length === 0) {
+                    optionsDiv.innerHTML = '<p style="grid-column: span 2; text-align: center; font-size: 0.85rem;">Nenhuma opção encontrada.</p>';
+                    return;
+                }
+
+                optionsDiv.innerHTML = options.map(opt => `
+                    <div class="shipping-option" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; background: white;" onclick='selectManualShipping(${JSON.stringify(opt).replace(/'/g, "&apos;")})'>
+                        <input type="radio" name="ms-shipping" ${selectedManualShipping && selectedManualShipping.id === opt.id ? 'checked' : ''}>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 0.85rem;">${opt.name}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">${opt.delivery_time} dias</div>
+                        </div>
+                        <div style="font-weight: 700; font-size: 0.85rem;">R$ ${Number(opt.price).toFixed(2).replace('.', ',')}</div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                alert('Erro ao calcular frete: ' + err.message);
+                optionsDiv.innerHTML = '<p style="grid-column: span 2; text-align: center; font-size: 0.85rem; color: var(--danger);">Falha no cálculo.</p>';
+            }
+        }
+
+        function selectManualShipping(opt) {
+            selectedManualShipping = opt;
+            renderManualSaleItems();
         }
 
         document.getElementById('manual-sale-form').onsubmit = async (e) => {
@@ -2231,10 +2316,16 @@
 
             const customerId = document.getElementById('ms-customer').value;
             const saleDate = document.getElementById('ms-date').value;
-            const totalAmount = manualSaleItems.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+            const subtotal = manualSaleItems.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+            const shippingCost = selectedManualShipping ? Number(selectedManualShipping.price) : 0;
+            const totalAmount = subtotal + shippingCost;
 
             try {
                 if (!customerId) return alert('Escolha o cliente cadastrado');
+
+                // Get customer data for state
+                const customer = allCustomers.find(c => c.id === customerId);
+                const state = customer ? (customer.uf || 'Manual') : 'Manual';
 
                 // 1. Create Order
                 const { data: order, error: orderError } = await supabaseClient
@@ -2242,10 +2333,12 @@
                     .insert([{
                         user_id: customerId,
                         total_amount: totalAmount,
-                        status: 'pago', // Manual sales are usually pre-paid or paid on the spot
+                        status: 'pago',
                         created_at: saleDate,
-                        shipping_method_name: 'Venda Manual / Depósito',
-                        shipping_address_state: 'Manual'
+                        shipping_method_name: selectedManualShipping ? `Manual: ${selectedManualShipping.name}` : 'Venda Manual / Retirada',
+                        shipping_method_id: selectedManualShipping ? selectedManualShipping.id : null,
+                        shipping_cost: shippingCost,
+                        shipping_address_state: state
                     }])
                     .select()
                     .single();
