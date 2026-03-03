@@ -1353,7 +1353,7 @@
             // Load Orders (Filtered by date)
             const { data: orders } = await supabaseClient
                 .from('orders')
-                .select('*, profiles(full_name, email)')
+                .select('*, profiles(full_name, email, uf)')
                 .gte('created_at', startDate)
                 .lte('created_at', endDateTime)
                 .order('created_at', { ascending: false });
@@ -1808,7 +1808,7 @@
             const regions = {};
             allOrders.forEach(o => {
                 if (o.status === 'pago' || o.status === 'enviado') {
-                    const state = o.shipping_address_state || 'N/A';
+                    const state = (o.profiles && o.profiles.uf) || 'Manual';
                     regions[state] = (regions[state] || 0) + Number(o.total_amount);
                 }
             });
@@ -2337,8 +2337,7 @@
                         created_at: saleDate,
                         shipping_method_name: selectedManualShipping ? `Manual: ${selectedManualShipping.name}` : 'Venda Manual / Retirada',
                         shipping_method_id: selectedManualShipping ? selectedManualShipping.id : null,
-                        shipping_cost: shippingCost,
-                        shipping_address_state: state
+                        shipping_cost: shippingCost
                     }])
                     .select()
                     .single();
