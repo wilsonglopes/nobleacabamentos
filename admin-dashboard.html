@@ -893,7 +893,11 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <div class="stat-label">Usuários Ativos</div>
-                                <div class="stat-value" style="font-size: 1.8rem; color: #4285F4;">1,2k</div>
+                                <div class="stat-value"
+                                    style="font-size: 1.8rem; color: #4285F4; display: flex; align-items: center; gap: 5px;">
+                                    1,2k <span
+                                        style="font-size: 0.6rem; background: #eee; color: #666; padding: 2px 6px; border-radius: 4px; font-weight: normal;">Demo</span>
+                                </div>
                             </div>
                             <div>
                                 <div class="stat-label">Sessões</div>
@@ -920,7 +924,11 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <div class="stat-label">Eventos Hoje</div>
-                                <div class="stat-value" style="font-size: 1.8rem; color: #1877F2;">452</div>
+                                <div class="stat-value"
+                                    style="font-size: 1.8rem; color: #1877F2; display: flex; align-items: center; gap: 5px;">
+                                    452 <span
+                                        style="font-size: 0.6rem; background: #eee; color: #666; padding: 2px 6px; border-radius: 4px; font-weight: normal;">Demo</span>
+                                </div>
                             </div>
                             <div>
                                 <div class="stat-label">Vendas Atribuídas</div>
@@ -969,11 +977,13 @@
                     </div>
                     <div class="stat-card" style="background: rgba(39, 174, 96, 0.05);">
                         <div class="stat-label">Taxa de Conversão</div>
-                        <div class="stat-value">3.2%</div>
+                        <div class="stat-value" id="insight-conversion-rate">0.0%</div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Baseado em pedidos/clientes</span>
                     </div>
                     <div class="stat-card" style="background: rgba(155, 89, 182, 0.05);">
                         <div class="stat-label">Retenção</div>
-                        <div class="stat-value">18%</div>
+                        <div class="stat-value" id="insight-retention-rate">0%</div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);">Clientes com +1 pedido</span>
                     </div>
                 </div>
             </div>
@@ -1810,6 +1820,25 @@
             const totalRevenue = paidOrders.reduce((acc, curr) => acc + Number(curr.total_amount), 0);
             const avgTicket = paidOrders.length ? totalRevenue / paidOrders.length : 0;
             document.getElementById('insight-avg-ticket').textContent = `R$ ${avgTicket.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+            // Conversion Rate (Approximation: Orders / Unique Potential Customers)
+            // Note: Real conversion rate requires GA4 session data. 
+            // Here we use a safe ratio of paid orders vs total customers as a internal "Sales Efficiency" indicator
+            const conversionRate = allCustomers.length ? (paidOrders.length / allCustomers.length) * 100 : 0;
+            document.getElementById('insight-conversion-rate').textContent = `${conversionRate.toFixed(1)}%`;
+
+            // Retention Rate (Customers with more than 1 order in this period or history)
+            // Using allOrders (which is filtered by date) to see active repeat customers in current selection
+            const customerOrderCounts = {};
+            allOrders.forEach(o => {
+                customerOrderCounts[o.user_id] = (customerOrderCounts[o.user_id] || 0) + 1;
+            });
+
+            const repeatCustomers = Object.values(customerOrderCounts).filter(count => count > 1).length;
+            const uniqueCustomersInPeriod = Object.keys(customerOrderCounts).length;
+
+            const retentionRate = uniqueCustomersInPeriod ? (repeatCustomers / uniqueCustomersInPeriod) * 100 : 0;
+            document.getElementById('insight-retention-rate').textContent = `${retentionRate.toFixed(0)}%`;
         }
 
         async function renderTopProducts() {
