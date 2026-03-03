@@ -1522,10 +1522,10 @@
 
         async function loadAllOrders() {
             const btn = event.currentTarget;
-            const icon = btn.querySelector('i');
-            icon.classList.add('animate-spin'); // Simplified spin
+            const icon = btn.querySelector('i, svg');
+            if (icon) icon.classList.add('animate-spin');
             await loadData();
-            icon.classList.remove('animate-spin');
+            if (icon) icon.classList.remove('animate-spin');
         }
 
         // Search Orders
@@ -2323,30 +2323,20 @@
             try {
                 if (!customerId) return alert('Escolha o cliente cadastrado');
 
-                // Get customer data for state
                 const customer = allCustomers.find(c => c.id === customerId);
-                const state = customer ? (customer.uf || 'Manual') : 'Manual';
 
-                // 1. Create Order
-                const { data: order, error: orderError } = await supabaseClient
-                    .from('orders')
-                    .insert([{
-                        user_id: customerId,
-                        total_amount: totalAmount,
-                        status: 'pago',
-                        created_at: saleDate,
-                        shipping_method_name: selectedManualShipping ? `Manual: ${selectedManualShipping.name}` : 'Venda Manual / Retirada',
-                        shipping_method_id: selectedManualShipping ? selectedManualShipping.id : null,
-                        shipping_cost: shippingCost
-                    }])
-                    .select()
-                    .single();
+                // 1. Prepare Data for Netlify Function
+                const orderData = {
+                    user_id: customerId,
+                    total_amount: totalAmount,
+                    status: 'pago',
+                    created_at: saleDate,
+                    shipping_method_name: selectedManualShipping ? `Manual: ${selectedManualShipping.name}` : 'Venda Manual / Retirada',
+                    shipping_method_id: selectedManualShipping ? String(selectedManualShipping.id) : null,
+                    shipping_cost: shippingCost
+                };
 
-                if (orderError) throw orderError;
-
-                // 2. Create Order Items
                 const itemsToInsert = manualSaleItems.map(item => ({
-                    order_id: order.id,
                     product_id: item.id,
                     name: item.name,
                     brand: item.brand,
@@ -2355,11 +2345,15 @@
                     price: item.price
                 }));
 
-                const { error: itemsError } = await supabaseClient
-                    .from('order_items')
-                    .insert(itemsToInsert);
+                // 2. Call Secure Netlify Function
+                const response = await fetch('/.netlify/functions/register-manual-sale', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order: orderData, items: itemsToInsert })
+                });
 
-                if (itemsError) throw itemsError;
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Erro ao registrar venda');
 
                 alert('Venda registrada com sucesso!');
                 closeManualSaleModal();
