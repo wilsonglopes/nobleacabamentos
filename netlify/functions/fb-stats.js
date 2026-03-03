@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// Node 18+ has built-in fetch, no need for node-fetch dependency
 
 exports.handler = async (event, context) => {
     const FB_ACCESS_TOKEN = process.env.FB_ACCESS_TOKEN;
