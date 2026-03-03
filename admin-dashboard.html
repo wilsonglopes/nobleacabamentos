@@ -16,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
 
     <!-- Microsoft Clarity -->
     <script type="text/javascript">
@@ -743,7 +744,12 @@
             <div class="data-section">
                 <div class="section-header">
                     <div class="section-title">Pedidos Recentes</div>
-                    <button class="btn btn-outline" onclick="switchTab('orders')">Ver Todos</button>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-primary" style="background: var(--success);"
+                            onclick="openManualSaleModal()"><i data-lucide="plus-circle"></i> Novo Pedido
+                            Manual</button>
+                        <button class="btn btn-outline" onclick="switchTab('orders')">Ver Todos</button>
+                    </div>
                 </div>
                 <table class="custom-table">
                     <thead>
@@ -775,6 +781,9 @@
                                 style="background: none; border: none; outline: none; font-family: inherit; font-size: 0.9rem;"
                                 id="order-search">
                         </div>
+                        <button class="btn btn-primary" style="background: var(--success);"
+                            onclick="openManualSaleModal()"><i data-lucide="plus-circle"></i> Novo Pedido
+                            Manual</button>
                         <button class="btn btn-primary" onclick="loadAllOrders()"><i
                                 data-lucide="refresh-cw"></i></button>
                     </div>
@@ -826,6 +835,8 @@
             <div class="data-section">
                 <div class="section-header">
                     <div class="section-title">Base de Clientes</div>
+                    <button class="btn btn-primary" onclick="openCustomerModal()"><i data-lucide="user-plus"></i> Novo
+                        Cliente</button>
                 </div>
                 <table class="custom-table">
                     <thead>
@@ -852,6 +863,97 @@
                     </div>
                     <div style="flex: 1; position: relative; min-height: 300px;">
                         <canvas id="regionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third-Party Analytics Integration (Visual Placeholders) -->
+            <div class="data-section" id="third-party-analytics" style="margin-top: 2rem;">
+                <div class="section-header">
+                    <div class="section-title">Integrações de Mídias (Analytics)</div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Visualização local /
+                        Em breve sincronização via API</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <!-- Card: Google Analytics -->
+                    <div class="stat-card"
+                        style="border: 1px solid rgba(66, 133, 244, 0.2); background: linear-gradient(135deg, rgba(66, 133, 244, 0.05) 0%, transparent 100%);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div
+                                    style="padding: 8px; border-radius: 10px; background: rgba(66, 133, 244, 0.1); color: #4285F4;">
+                                    <i data-lucide="line-chart"></i>
+                                </div>
+                                <strong style="font-size: 1.1rem;">Google Analytics 4</strong>
+                            </div>
+                            <button class="btn btn-sm" style="padding: 4px 10px; font-size: 0.75rem;"
+                                onclick="alert('Funcionalidade de API do Google GA4 em desenvolvimento local.')">Configurar</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div class="stat-label">Usuários Ativos</div>
+                                <div class="stat-value" style="font-size: 1.8rem; color: #4285F4;">1,2k</div>
+                            </div>
+                            <div>
+                                <div class="stat-label">Sessões</div>
+                                <div class="stat-value" style="font-size: 1.8rem;">3,4k</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Facebook Pixel -->
+                    <div class="stat-card"
+                        style="border: 1px solid rgba(24, 119, 242, 0.2); background: linear-gradient(135deg, rgba(24, 119, 242, 0.05) 0%, transparent 100%);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div
+                                    style="padding: 8px; border-radius: 10px; background: rgba(24, 119, 242, 0.1); color: #1877F2;">
+                                    <i data-lucide="facebook"></i>
+                                </div>
+                                <strong style="font-size: 1.1rem;">Meta Pixel (Facebook)</strong>
+                            </div>
+                            <button class="btn btn-sm" style="padding: 4px 10px; font-size: 0.75rem;"
+                                onclick="alert('Meta Business Manager: Conexão pendente de Access Token.')">Conectar</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div class="stat-label">Eventos Hoje</div>
+                                <div class="stat-value" style="font-size: 1.8rem; color: #1877F2;">452</div>
+                            </div>
+                            <div>
+                                <div class="stat-label">Vendas Atribuídas</div>
+                                <div class="stat-value" style="font-size: 1.8rem;">12</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card: Microsoft Clarity -->
+                    <div class="stat-card"
+                        style="border: 1px solid rgba(0, 120, 215, 0.2); background: linear-gradient(135deg, rgba(0, 120, 215, 0.05) 0%, transparent 100%);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div
+                                    style="padding: 8px; border-radius: 10px; background: rgba(0, 120, 215, 0.1); color: #0078D7;">
+                                    <i data-lucide="video"></i>
+                                </div>
+                                <strong style="font-size: 1.1rem;">Microsoft Clarity</strong>
+                            </div>
+                            <button class="btn btn-sm" style="padding: 4px 10px; font-size: 0.75rem;"
+                                onclick="alert('Abrindo portal externo do Clarity...')">Painel Externo</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div class="stat-label">Tempo Médio</div>
+                                <div class="stat-value" style="font-size: 1.8rem; color: #0078D7;">4m 20s</div>
+                            </div>
+                            <div>
+                                <div class="stat-label">Taxa de Raiva</div>
+                                <div class="stat-value" style="font-size: 1.8rem; color: var(--danger);">2%</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -936,12 +1038,19 @@
 
     <!-- Modal: Customer Edit -->
     <div class="modal" id="customerModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 800px;">
             <i data-lucide="x" class="close-modal" onclick="closeCustomerModal()"></i>
             <h2 id="c-modal-title" style="margin-bottom: 2rem;">Gerenciar Cliente</h2>
             <form id="customer-form">
                 <input type="hidden" id="c-id">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem;">
+                    <!-- Dados Pessoais -->
+                    <div style="grid-column: span 2;">
+                        <h3
+                            style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-light); border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                            Dados Pessoais</h3>
+                    </div>
                     <div style="grid-column: span 2;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Nome Completo</label>
                         <input type="text" id="c-name"
@@ -954,12 +1063,12 @@
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Telefone</label>
-                        <input type="text" id="c-phone"
+                        <input type="text" id="c-phone" placeholder="(00) 00000-0000"
                             style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">CPF/CNPJ</label>
-                        <input type="text" id="c-cpf"
+                        <input type="text" id="c-cpf" placeholder="000.000.000-00"
                             style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
                     </div>
                     <div>
@@ -970,25 +1079,144 @@
                             <option value="admin">Administrador</option>
                         </select>
                     </div>
+
+                    <!-- Endereço -->
+                    <div style="grid-column: span 2; margin-top: 1rem;">
+                        <h3
+                            style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-light); border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                            Endereço de Entrega</h3>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">CEP</label>
+                        <input type="text" id="c-cep" placeholder="00000-000" onblur="lookupCEPAdmin()"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estado (UF)</label>
+                        <input type="text" id="c-uf" maxlength="2"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Cidade</label>
+                        <input type="text" id="c-cidade"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Logradouro
+                            (Rua/Avenida)</label>
+                        <input type="text" id="c-logradouro"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Número</label>
+                        <input type="text" id="c-numero"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Bairro</label>
+                        <input type="text" id="c-bairro"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Complemento
+                            (Opcional)</label>
+                        <input type="text" id="c-complemento"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
                 </div>
-                <div style="display: flex; gap: 1rem; justify-content: space-between;">
+
+                <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 2rem;">
                     <button type="button" class="btn btn-outline"
                         style="color: var(--danger); border-color: var(--danger);" onclick="deleteCustomer()">Excluir
                         Perfil</button>
                     <div style="display: flex; gap: 1rem;">
                         <button type="button" class="btn btn-outline" onclick="closeCustomerModal()">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="submit" class="btn btn-primary">Salvar Cliente</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Modal: Manual Sale -->
+    <div class="modal" id="manualSaleModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <i data-lucide="x" class="close-modal" onclick="closeManualSaleModal()"></i>
+            <h2 style="margin-bottom: 2rem;">Registrar Novo Pedido (Manual)</h2>
+            <form id="manual-sale-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Selecione o
+                            Cliente</label>
+                        <select id="ms-customer"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" required>
+                            <option value="">Selecione um cliente...</option>
+                            <!-- Via JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Data da
+                            Venda</label>
+                        <input type="date" id="ms-date"
+                            style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;" required>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Adicionar
+                        Produtos</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <select id="ms-product-select"
+                            style="flex: 1; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                            <option value="">Buscar produto...</option>
+                            <!-- Via JS -->
+                        </select>
+                        <input type="number" id="ms-product-qty" value="1" min="1"
+                            style="width: 80px; padding: 0.8rem; border-radius: 8px; border: 1px solid #ddd;">
+                        <button type="button" class="btn btn-primary" onclick="addProductToSale()">Adicionar</button>
+                    </div>
+
+                    <table class="custom-table" style="background: #f8f9fa; border-radius: 8px;">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd</th>
+                                <th>Preço Un.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ms-items-list">
+                            <!-- Via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: var(--sidebar-bg); color: white; padding: 1.5rem; border-radius: 12px;">
+                    <div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Método de Pagamento</div>
+                        <strong>Depósito / Transferência Bancária</strong>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Total da Venda</div>
+                        <div style="font-size: 1.5rem; font-weight: 800;" id="ms-total-display">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="closeManualSaleModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="background: var(--success);">Finalizar
+                        e Registrar Venda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://xpoktmqxmgduginmqojf.supabase.co';
-        const SUPABASE_ANON_KEY =
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhwb2t0bXF4bWdkdWdpbm1xb2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODUyODMsImV4cCI6MjA4NzM2MTI4M30.Zkn5oXvHzqAvOyIrEUQeRLFto_dibEQo9ynBqtidQv8';
+        // Supabase Configuration from central config.js
+        const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.CONFIG;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let salesChart, categoryChart;
@@ -1026,8 +1254,51 @@
             document.getElementById('filter-start').value = firstDay.toISOString().split('T')[0];
             document.getElementById('filter-end').value = now.toISOString().split('T')[0];
 
+            setupMasks();
             await loadData();
             setupTabListeners();
+        }
+
+        function setupMasks() {
+            const cepInput = document.getElementById('c-cep');
+            if (cepInput) {
+                cepInput.oninput = function (e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length > 5) v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+                    e.target.value = v;
+                    if (v.replace(/\D/g, '').length === 8) {
+                        lookupCEPAdmin();
+                    }
+                };
+            }
+
+            const cpfInput = document.getElementById('c-cpf');
+            if (cpfInput) {
+                cpfInput.oninput = function (e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    if (v.length <= 11) {
+                        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    } else {
+                        v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+                        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                        v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                        v = v.replace(/(\d{4})(\d)/, '$1-$2');
+                    }
+                    e.target.value = v;
+                };
+            }
+
+            const phoneInput = document.getElementById('c-phone');
+            if (phoneInput) {
+                phoneInput.oninput = function (e) {
+                    let v = e.target.value.replace(/\D/g, '');
+                    v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+                    v = v.replace(/(\d)(\d{4})$/, '$1-$2');
+                    e.target.value = v;
+                };
+            }
         }
 
         function updateDate() {
@@ -1380,13 +1651,21 @@
             const labels = last6Keys.map(k => stats[k].label);
             const data = last6Keys.map(k => stats[k].total);
 
+            // Use last 6 months as default labels if no data, but with 0 values
+            const defaultLabels = [];
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                defaultLabels.push(d.toLocaleString('pt-BR', { month: 'short' }));
+            }
+
             salesChart = new Chart(ctxSales, {
                 type: 'line',
                 data: {
-                    labels: labels.length ? labels : ['Set', 'Out', 'Nov', 'Dez', 'Jan', 'Fev'],
+                    labels: labels.length ? labels : defaultLabels,
                     datasets: [{
                         label: 'Vendas (R$)',
-                        data: data.length ? data : [1200, 1900, 3000, 5000, 2300, 3400],
+                        data: data.length ? data : new Array(defaultLabels.length).fill(0),
                         borderColor: '#d35400',
                         borderWidth: 4,
                         tension: 0.4,
@@ -1623,18 +1902,96 @@
 
         function openCustomerModal(id) {
             const modal = document.getElementById('customerModal');
-            const c = allCustomers.find(cust => cust.id === id);
-            if (!c) return;
+            document.getElementById('customer-form').reset();
+            document.getElementById('c-id').value = '';
+            document.getElementById('c-modal-title').textContent = id ? 'Editar Cliente' : 'Novo Cliente';
 
-            document.getElementById('c-id').value = c.id;
-            document.getElementById('c-name').value = c.full_name || '';
-            document.getElementById('c-email').value = c.email || '';
-            document.getElementById('c-phone').value = c.phone || '';
-            document.getElementById('c-cpf').value = c.cpf_cnpj || '';
-            document.getElementById('c-role').value = c.role || 'customer';
+            const btnDelete = document.querySelector('button[onclick="deleteCustomer()"]');
+            if (btnDelete) btnDelete.style.display = id ? 'block' : 'none';
+
+            if (id) {
+                const c = allCustomers.find(cust => cust.id === id);
+                if (c) {
+                    document.getElementById('c-id').value = c.id;
+                    document.getElementById('c-name').value = c.full_name || '';
+                    document.getElementById('c-email').value = c.email || '';
+                    document.getElementById('c-phone').value = c.phone || '';
+                    document.getElementById('c-cpf').value = c.cpf_cnpj || '';
+                    document.getElementById('c-role').value = c.role || 'customer';
+
+                    // Address Fields
+                    document.getElementById('c-cep').value = c.cep || '';
+                    document.getElementById('c-logradouro').value = c.logradouro || '';
+                    document.getElementById('c-numero').value = c.numero || '';
+                    document.getElementById('c-bairro').value = c.bairro || '';
+                    document.getElementById('c-cidade').value = c.cidade || '';
+                    document.getElementById('c-uf').value = c.uf || '';
+                    document.getElementById('c-complemento').value = c.complemento || '';
+                }
+            }
 
             modal.style.display = 'flex';
             lucide.createIcons();
+        }
+
+        async function lookupCEPAdmin() {
+            const cepInput = document.getElementById('c-cep');
+            if (!cepInput) return;
+
+            let cep = cepInput.value.replace(/\D/g, '');
+            if (cep.length !== 8) return;
+
+            // Evitar múltiplas chamadas seguidas para o mesmo CEP
+            if (cep === cepInput.dataset.lastCep) return;
+            cepInput.dataset.lastCep = cep;
+
+            try {
+                // Preencher com "Buscando..." para dar feedback
+                document.getElementById('c-cidade').value = 'Buscando...';
+                document.getElementById('c-uf').value = '..';
+
+                let data;
+                try {
+                    // Tenta ViaCEP primeiro
+                    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    if (!res.ok) throw new Error();
+                    data = await res.json();
+                    if (data.erro) throw new Error('CEP não encontrado no ViaCEP');
+                } catch (e) {
+                    console.log('ViaCEP falhou ou bloqueado, tentando BrasilAPI...');
+                    // Fallback para BrasilAPI
+                    const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`);
+                    if (!res.ok) throw new Error('CEP não encontrado em nenhum serviço.');
+                    const bData = await res.json();
+                    data = {
+                        logradouro: bData.street,
+                        bairro: bData.neighborhood,
+                        localidade: bData.city,
+                        uf: bData.state
+                    };
+                }
+
+                document.getElementById('c-logradouro').value = data.logradouro || '';
+                document.getElementById('c-bairro').value = data.bairro || '';
+                document.getElementById('c-cidade').value = data.localidade || '';
+                document.getElementById('c-uf').value = data.uf || '';
+
+                if (data.logradouro) {
+                    document.getElementById('c-numero').focus();
+                } else {
+                    document.getElementById('c-logradouro').focus();
+                }
+            } catch (err) {
+                console.error('Erro ao buscar CEP:', err);
+                if (err.message.includes('em nenhum serviço')) {
+                    alert('Erro: ' + err.message);
+                } else {
+                    alert('Erro ao buscar CEP: Verifique sua conexão ou se há extensões (como AdBlock) bloqueando a consulta.');
+                }
+                document.getElementById('c-cidade').value = '';
+                document.getElementById('c-uf').value = '';
+                cepInput.dataset.lastCep = ''; // Reset para permitir tentar de novo
+            }
         }
 
         function closeCustomerModal() {
@@ -1649,19 +2006,42 @@
                 email: document.getElementById('c-email').value,
                 phone: document.getElementById('c-phone').value,
                 cpf_cnpj: document.getElementById('c-cpf').value,
-                role: document.getElementById('c-role').value
+                role: document.getElementById('c-role').value,
+
+                // Address fields
+                cep: document.getElementById('c-cep').value,
+                logradouro: document.getElementById('c-logradouro').value,
+                numero: document.getElementById('c-numero').value,
+                bairro: document.getElementById('c-bairro').value,
+                cidade: document.getElementById('c-cidade').value,
+                uf: document.getElementById('c-uf').value,
+                complemento: document.getElementById('c-complemento').value,
+
+                updated_at: new Date()
             };
 
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update(customerData)
-                .eq('id', id);
+            try {
+                if (id) {
+                    // Update
+                    const { error } = await supabaseClient
+                        .from('profiles')
+                        .update(customerData)
+                        .eq('id', id);
+                    if (error) throw error;
+                } else {
+                    // Create
+                    customerData.id = crypto.randomUUID();
+                    const { error } = await supabaseClient
+                        .from('profiles')
+                        .insert([customerData]);
+                    if (error) throw error;
+                }
 
-            if (error) {
-                alert('Erro ao atualizar: ' + error.message);
-            } else {
                 closeCustomerModal();
                 loadData();
+                alert(id ? 'Cliente atualizado!' : 'Cliente cadastrado com sucesso!');
+            } catch (err) {
+                alert('Erro ao salvar: ' + err.message);
             }
         };
 
@@ -1673,6 +2053,149 @@
                 loadData();
             }
         }
+        // Manual Sale Logic
+        let manualSaleItems = [];
+
+        function openManualSaleModal() {
+            manualSaleItems = [];
+            renderManualSaleItems();
+
+            document.getElementById('manual-sale-form').reset();
+            document.getElementById('ms-date').value = new Date().toISOString().split('T')[0];
+
+            // Populate Customer Select
+            const customerSelect = document.getElementById('ms-customer');
+            customerSelect.innerHTML = '<option value="">Selecione um cliente...</option>';
+            allCustomers.forEach(c => {
+                customerSelect.innerHTML += `<option value="${c.id}">${c.full_name || 'N/A'} (${c.email || 'N/A'})</option>`;
+            });
+
+            // Populate Product Select
+            const productSelect = document.getElementById('ms-product-select');
+            productSelect.innerHTML = '<option value="">Buscar produto...</option>';
+            allProducts.forEach(p => {
+                productSelect.innerHTML += `<option value="${p.id}">${p.name} - ${p.brand} (${p.color}) - R$ ${p.price}</option>`;
+            });
+
+            document.getElementById('manualSaleModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closeManualSaleModal() {
+            document.getElementById('manualSaleModal').style.display = 'none';
+        }
+
+        function addProductToSale() {
+            const productId = document.getElementById('ms-product-select').value;
+            const qty = parseInt(document.getElementById('ms-product-qty').value);
+
+            if (!productId) return alert('Selecione um produto');
+
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = manualSaleItems.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                manualSaleItems.push({
+                    id: product.id,
+                    name: product.name,
+                    brand: product.brand,
+                    color: product.color,
+                    price: product.price,
+                    quantity: qty
+                });
+            }
+
+            renderManualSaleItems();
+        }
+
+        function removeProductFromSale(index) {
+            manualSaleItems.splice(index, 1);
+            renderManualSaleItems();
+        }
+
+        function renderManualSaleItems() {
+            const tbody = document.getElementById('ms-items-list');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            manualSaleItems.forEach((item, index) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+
+                tbody.innerHTML += `
+                            <tr>
+                                <td>${item.name} (${item.color})</td>
+                                <td>${item.quantity}</td>
+                                <td>R$ ${Number(item.price).toFixed(2).replace('.', ',')}</td>
+                                <td>R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+                                <td>
+                                    <button type="button" class="btn btn-outline" style="padding: 0.2rem; color: var(--danger);" onclick="removeProductFromSale(${index})">
+                                        <i data-lucide="trash-2" style="width: 14px;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+            });
+
+            document.getElementById('ms-total-display').textContent = `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            lucide.createIcons();
+        }
+
+        document.getElementById('manual-sale-form').onsubmit = async (e) => {
+            e.preventDefault();
+            if (manualSaleItems.length === 0) return alert('Adicione pelo menos um produto');
+
+            const customerId = document.getElementById('ms-customer').value;
+            const saleDate = document.getElementById('ms-date').value;
+            const totalAmount = manualSaleItems.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+
+            try {
+                if (!customerId) return alert('Escolha o cliente cadastrado');
+
+                // 1. Create Order
+                const { data: order, error: orderError } = await supabaseClient
+                    .from('orders')
+                    .insert([{
+                        user_id: customerId,
+                        total_amount: totalAmount,
+                        status: 'pago', // Manual sales are usually pre-paid or paid on the spot
+                        created_at: saleDate,
+                        shipping_method_name: 'Venda Manual / Depósito',
+                        shipping_address_state: 'Manual'
+                    }])
+                    .select()
+                    .single();
+
+                if (orderError) throw orderError;
+
+                // 2. Create Order Items
+                const itemsToInsert = manualSaleItems.map(item => ({
+                    order_id: order.id,
+                    product_id: item.id,
+                    name: item.name,
+                    brand: item.brand,
+                    color: item.color,
+                    quantity: item.quantity,
+                    price: item.price
+                }));
+
+                const { error: itemsError } = await supabaseClient
+                    .from('order_items')
+                    .insert(itemsToInsert);
+
+                if (itemsError) throw itemsError;
+
+                alert('Venda registrada com sucesso!');
+                closeManualSaleModal();
+                loadData();
+            } catch (err) {
+                alert('Erro ao registrar venda: ' + err.message);
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>

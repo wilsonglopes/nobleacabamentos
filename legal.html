@@ -144,9 +144,9 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <script>
-        const SUPABASE_URL = 'https://xpoktmqxmgduginmqojf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhwb2t0bXF4bWdkdWdpbm1xb2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODUyODMsImV4cCI6MjA4NzM2MTI4M30.Zkn5oXvHzqAvOyIrEUQeRLFto_dibEQo9ynBqtidQv8';
+        const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.CONFIG;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function updateAuthButton() {
