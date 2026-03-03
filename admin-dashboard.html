@@ -1869,10 +1869,31 @@
                         btnEl.onclick = () => alert('O Meta Pixel está conectado e recebendo dados reais!');
                     }
                 } else {
+                    // Show specific error in the UI
                     console.log('FB API not connected:', data.error);
+                    if (data.error && data.error.includes('Missing')) {
+                        badgeEl.textContent = 'Faltam Chaves';
+                        badgeEl.style.background = 'rgba(231, 76, 60, 0.1)';
+                        badgeEl.style.color = '#e74c3c';
+                    } else if (data.error) {
+                        badgeEl.textContent = 'Erro API';
+                        badgeEl.style.background = 'rgba(231, 76, 60, 0.1)';
+                        badgeEl.style.color = '#e74c3c';
+                        badgeEl.title = data.error;
+
+                        if (btnEl) {
+                            btnEl.onclick = () => alert('Erro do Facebook: ' + data.error);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error('Error fetching FB stats:', err);
+                const badgeEl = document.getElementById('fb-status-badge');
+                if (badgeEl) {
+                    badgeEl.textContent = 'Erro Rede';
+                    badgeEl.style.background = 'rgba(231, 76, 60, 0.1)';
+                    badgeEl.style.color = '#e74c3c';
+                }
             }
         }
 
