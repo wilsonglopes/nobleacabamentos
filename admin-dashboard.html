@@ -924,15 +924,15 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <div class="stat-label">Eventos Hoje</div>
-                                <div class="stat-value"
+                                <div class="stat-value" id="fb-events-today"
                                     style="font-size: 1.8rem; color: #1877F2; display: flex; align-items: center; gap: 5px;">
-                                    452 <span
+                                    0 <span id="fb-status-badge"
                                         style="font-size: 0.6rem; background: #eee; color: #666; padding: 2px 6px; border-radius: 4px; font-weight: normal;">Demo</span>
                                 </div>
                             </div>
                             <div>
                                 <div class="stat-label">Vendas Atribuídas</div>
-                                <div class="stat-value" style="font-size: 1.8rem;">12</div>
+                                <div class="stat-value" id="fb-purchases-today" style="font-size: 1.8rem;">0</div>
                             </div>
                         </div>
                     </div>
@@ -1839,6 +1839,33 @@
 
             const retentionRate = uniqueCustomersInPeriod ? (repeatCustomers / uniqueCustomersInPeriod) * 100 : 0;
             document.getElementById('insight-retention-rate').textContent = `${retentionRate.toFixed(0)}%`;
+
+            // Meta Pixel Stats (Real-time from Netlify Function)
+            fetchFbStats();
+        }
+
+        async function fetchFbStats() {
+            try {
+                const response = await fetch('/.netlify/functions/fb-stats');
+                const data = await response.json();
+
+                const eventsEl = document.getElementById('fb-events-today');
+                const purchasesEl = document.getElementById('fb-purchases-today');
+                const badgeEl = document.getElementById('fb-status-badge');
+
+                if (data.connected) {
+                    eventsEl.firstChild.textContent = `${data.events_today} `;
+                    purchasesEl.textContent = data.purchases_today;
+                    badgeEl.textContent = 'Conectado';
+                    badgeEl.style.background = 'rgba(39, 174, 96, 0.1)';
+                    badgeEl.style.color = '#27ae60';
+                } else {
+                    // Stay in demo mode or show error if specifically missing keys
+                    console.log('FB API not connected:', data.error);
+                }
+            } catch (err) {
+                console.error('Error fetching FB stats:', err);
+            }
         }
 
         async function renderTopProducts() {
