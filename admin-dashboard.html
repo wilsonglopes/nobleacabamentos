@@ -920,7 +920,7 @@
                             </div>
                             <button id="fb-connect-btn" class="btn btn-sm"
                                 style="padding: 4px 10px; font-size: 0.75rem;"
-                                onclick="alert('Meta Business Manager: Conexão pendente de Access Token nas Configurações da Netlify.')">Conectar</button>
+                                onclick="alert('Funcionalidade em desenvolvimento. Integre com o Meta Business Manager futuramente.')">Pendente</button>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
@@ -1841,8 +1841,8 @@
             const retentionRate = uniqueCustomersInPeriod ? (repeatCustomers / uniqueCustomersInPeriod) * 100 : 0;
             document.getElementById('insight-retention-rate').textContent = `${retentionRate.toFixed(0)}%`;
 
-            // Meta Pixel Stats (Real-time from Netlify Function)
-            fetchFbStats();
+            // Meta Pixel Stats (Disabled for now due to permissions)
+            // fetchFbStats();
         }
 
         async function fetchFbStats() {
