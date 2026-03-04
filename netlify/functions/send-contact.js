@@ -37,17 +37,17 @@ exports.handler = async (event) => {
             <meta charset="utf-8">
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-                body { font-family: 'Outfit', sans-serif; line-height: 1.6; color: #2d3436; margin: 0; padding: 0; background-color: #f4f7f6; }
-                .container { max-width: 600px; margin: 30px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e1e8e6; }
-                .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d3436 100%); padding: 40px 20px; text-align: center; }
-                .header img { height: 60px; margin-bottom: 15px; }
+                body { font-family: 'Outfit', sans-serif; line-height: 1.6; color: #2d3436; margin: 0; padding: 0; background-color: #f0f2f1; }
+                .container { max-width: 600px; margin: 30px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e1e8e6; }
+                .header { background: #ffffff; padding: 40px 20px; text-align: center; border-bottom: 4px solid #d35400; }
+                .header img { height: 90px; width: auto; }
                 .content { padding: 45px 40px; }
                 .field { margin-bottom: 30px; }
                 .label { font-size: 11px; text-transform: uppercase; color: #a0a0a0; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; border-left: 3px solid #d35400; padding-left: 10px; }
-                .value { font-size: 16px; color: #2d3436; font-weight: 400; background: #fcfcfc; padding: 12px 15px; border-radius: 6px; border: 1px solid #f0f0f0; }
-                .message-box { background: #fffcf9; padding: 25px; border-radius: 10px; border: 1px dashed #fad390; color: #2d3436; line-height: 1.8; font-size: 15px; }
+                .value { font-size: 16px; color: #2d3436; font-weight: 400; background: #f9f9f9; padding: 15px 20px; border-radius: 8px; border: 1px solid #eee; }
+                .message-box { background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #fad390; color: #2d3436; line-height: 1.8; font-size: 15px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
                 .footer { background: #fcfcfc; padding: 25px; text-align: center; font-size: 12px; color: #b2bec3; border-top: 1px solid #f0f0f0; }
-                .btn { display: inline-block; padding: 12px 25px; background: #d35400; color: #ffffff !important; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px; font-size: 14px; }
+                .btn { display: inline-block; padding: 15px 30px; background: #d35400; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 20px; font-size: 15px; box-shadow: 0 4px 15px rgba(211, 84, 0, 0.3); }
             </style>
         </head>
         <body>
