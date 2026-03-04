@@ -194,22 +194,24 @@
                 style="margin-top: 1rem; background: #856404; border: none;">Completar Cadastro</a>
         </div>
 
-        <div id="shipping-section"
-            style="display: none; margin: 1rem 0; background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
-            <h3>Simular Frete</h3>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem; align-items: center;">
-                <input type="text" id="shipping-cep" placeholder="00000-000"
-                    style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; width: 150px;">
-                <button onclick="calculateShipping()" class="btn btn-sm">Calcular</button>
-            </div>
-            <div id="shipping-options" style="margin-top: 1rem;">
-                <!-- Opções de frete via JS -->
-            </div>
-        </div>
+    </div>
 
-        <div id="cart-content">
-            <!-- Gerado via JS -->
+    <div id="cart-content">
+        <!-- Gerado via JS -->
+    </div>
+
+    <div id="shipping-section"
+        style="display: none; margin: 1rem 0; background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+        <h3 id="shipping-title">Simular Frete</h3>
+        <div id="shipping-input-group" style="display: flex; gap: 1rem; margin-top: 1rem; align-items: center;">
+            <input type="text" id="shipping-cep" placeholder="00000-000"
+                style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; width: 150px;">
+            <button id="calculate-btn" onclick="calculateShipping()" class="btn btn-sm">Calcular</button>
         </div>
+        <div id="shipping-options" style="margin-top: 1rem;">
+            <!-- Opções de frete via JS -->
+        </div>
+    </div>
     </div>
 
     <!-- Supabase Client initialization is handled in the scripts below -->
@@ -232,6 +234,8 @@
             const checkoutBtn = document.getElementById('checkout-btn');
             const shippingSection = document.getElementById('shipping-section');
             const shippingCepInput = document.getElementById('shipping-cep');
+            const shippingTitle = document.getElementById('shipping-title');
+            const shippingInputGroup = document.getElementById('shipping-input-group');
 
             if (!user) {
                 if (checkoutBtn) {
@@ -272,6 +276,12 @@
 
                 if (profile.cep) {
                     shippingCepInput.value = profile.cep;
+                    shippingCepInput.type = 'hidden';
+                    shippingTitle.textContent = `Opções de Frete para o CEP: ${profile.cep}`;
+                    if (document.getElementById('calculate-btn')) {
+                        document.getElementById('calculate-btn').style.display = 'none';
+                    }
+
                     console.log("CEP detectado no perfil:", profile.cep);
                     // Só calcula se o carrinho não estiver vazio
                     if (Cart.getItems().length > 0) {
