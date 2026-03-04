@@ -580,6 +580,19 @@
                 padding: 0;
             }
 
+            .nav-item i {
+                width: 24px;
+                height: 24px;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .mobile-home-btn {
+                display: flex !important;
+            }
+
             .logo-area,
             .sidebar-footer {
                 display: none;
@@ -628,6 +641,10 @@
         </div>
 
         <nav class="nav-menu">
+            <a href="index.html" class="nav-item mobile-home-btn">
+                <i data-lucide="home"></i>
+                <span>Início</span>
+            </a>
             <a href="#" class="nav-item active" data-tab="overview">
                 <i data-lucide="layout-dashboard"></i>
                 <span>Geral</span>
