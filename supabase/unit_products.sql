@@ -14,7 +14,7 @@ SELECT
     15 as width_cm,
     10 as height_cm,
     CASE WHEN color = 'marfim' THEN 'assets/produtos/terminal_marfin.jpg' ELSE 'assets/produtos/terminal_' || color || '.jpg' END as image_url,
-    '1 Unidade. Terminal de Cumeeira na cor ' || color || '. Produzido pela ' || brand || '. Peso: 0.35 kg | Dimensões: 15x15x10cm. Garantia de qualidade.' as description
+    '1 Unidade. Terminal de Cumeeira na cor ' || color || '. Produzido pela ' || brand || '. Peso: 0.35 kg | Dimensões: 10x15x15cm. Garantia de qualidade.' as description
 FROM (
     SELECT DISTINCT brand, color FROM products WHERE name ILIKE 'Terminal de Cumeeira%'
 ) as base_products;
@@ -32,7 +32,7 @@ SELECT
     35 as width_cm,
     20 as height_cm,
     'assets/produtos/terminal3vias_' || color || '.jpg' as image_url,
-    '1 Unidade. Conexão 3 Vias na cor ' || color || '. Produzido pela ' || brand || '. Peso: 0.7 kg | Dimensões: 35x35x20cm. Garantia de qualidade.' as description
+    '1 Unidade. Conexão 3 Vias na cor ' || color || '. Produzido pela ' || brand || '. Peso: 0.7 kg | Dimensões: 20x35x35cm. Garantia de qualidade.' as description
 FROM (
     SELECT DISTINCT brand, color FROM products WHERE name ILIKE 'Conexão 3 Vias%'
 ) as base_products;
