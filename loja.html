@@ -227,7 +227,7 @@
                 const { data, error } = await supabaseClient
                     .from('products')
                     .select('*')
-                    .order('name', { ascending: true });
+                    .order('price', { ascending: true });
 
                 if (error) throw error;
 
