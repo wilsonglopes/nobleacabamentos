@@ -1044,6 +1044,31 @@
                 </div>
             </div>
         </section>
+
+        <!-- Tab: Messages -->
+        <section id="tab-messages" class="tab-content">
+            <div class="data-section">
+                <div class="section-header">
+                    <div class="section-title">Mensagens de Contato</div>
+                    <button class="btn btn-primary" onclick="loadMessages()"><i data-lucide="refresh-cw"></i>
+                        Atualizar</button>
+                </div>
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Assunto</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-list">
+                        <!-- Via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <!-- Modal: Product Edit/Add -->
@@ -2064,10 +2089,12 @@
         function switchTab(tabId) {
             // Update UI
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+            const targetNav = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+            if (targetNav) targetNav.classList.add('active');
 
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
 
             // Update Title
             const titles = {
@@ -2075,12 +2102,14 @@
                 orders: 'Gerenciamento de Pedidos',
                 products: 'Catálogo de Produtos',
                 customers: 'Clientes & Insights',
-                marketing: 'Campanhas de Marketing'
+                marketing: 'Campanhas de Marketing',
+                messages: 'Mensagens de Contato'
             };
-            document.getElementById('page-title').textContent = titles[tabId];
+            document.getElementById('page-title').textContent = titles[tabId] || 'Admin Noble';
 
             if (tabId === 'overview') renderCharts();
             if (tabId === 'marketing') renderMarketing();
+            if (tabId === 'messages') loadMessages();
         }
 
         let regionChart;
