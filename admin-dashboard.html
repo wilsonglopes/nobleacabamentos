@@ -681,6 +681,10 @@
                 <i data-lucide="megaphone"></i>
                 <span>Marketing</span>
             </a>
+            <a href="#" class="nav-item" data-tab="messages">
+                <i data-lucide="mail"></i>
+                <span>Mensagens</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -1599,6 +1603,157 @@
                 alert('Erro: ' + err.message);
                 btn.innerHTML = originalHtml;
                 btn.disabled = false;
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contact_messages')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                renderMessages(data || []);
+            } catch (err) {
+                console.error('Error loading messages:', err);
+            }
+        }
+
+        function renderMessages(messages) {
+            const tbody = document.getElementById('messages-list');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            messages.forEach(msg => {
+                const date = new Date(msg.created_at).toLocaleString('pt-BR');
+                const isRead = msg.status === 'read';
+
+                tbody.innerHTML += `
+                <tr style="${!isRead ? 'background: rgba(211, 84, 0, 0.05); font-weight: 600;' : ''}">
+                    <td style="font-size: 0.85rem;">${date}</td>
+                    <td>
+                        <div style="font-weight: 600;">${msg.full_name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${msg.email}</div>
+                    </td>
+                    <td>${msg.subject}</td>
+                    <td><span class="status-pill ${isRead ? 'status-paid' : 'status-pending'}">${isRead ? 'Lida' : 'Nova'}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="padding: 0.4rem;" onclick="viewMessage('${msg.id}')" title="Ler Mensagem">
+                                <i data-lucide="eye" style="width: 16px;"></i>
+                            </button>
+                            ${!isRead ? `
+                                <button class="btn btn-success" style="padding: 0.4rem;" onclick="markMessageAsRead('${msg.id}')" title="Marcar como Lida">
+                                    <i data-lucide="check" style="width: 16px;"></i>
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-danger" style="padding: 0.4rem;" onclick="deleteMessage('${msg.id}')" title="Excluir">
+                                <i data-lucide="trash-2" style="width: 16px;"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        async function viewMessage(id) {
+            try {
+                const { data: msg, error } = await supabaseClient
+                    .from('contact_messages')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                const alertHtml = `
+                <div style="text-align: left;">
+                    <h3 style="margin-bottom: 1rem;">Mensagem de ${msg.full_name}</h3>
+                    <div style="margin-bottom: 1.5rem; background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <p><strong>E-mail:</strong> ${msg.email}</p>
+                        <p><strong>Assunto:</strong> ${msg.subject}</p>
+                        <p><strong>Data:</strong> ${new Date(msg.created_at).toLocaleString('pt-BR')}</p>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">Conteúdo</h4>
+                        <div style="background: #fff; padding: 1.5rem; border: 1px solid #eee; border-radius: 8px; line-height: 1.6; white-space: pre-wrap;">${msg.message}</div>
+                    </div>
+                </div>
+                `;
+
+                const modal = document.getElementById('productModal');
+                document.getElementById('modal-title').textContent = 'Visualizar Mensagem';
+                document.getElementById('product-form').style.display = 'none';
+
+                const detailView = document.createElement('div');
+                detailView.id = 'msg-detail-view';
+                detailView.innerHTML = alertHtml + '<div style="margin-top:2rem; text-align:right;"><button class="btn btn-outline" onclick="closeMsgModal()">Fechar</button></div>';
+
+                const modalContent = modal.querySelector('.modal-content');
+                const existingDetail = document.getElementById('msg-detail-view');
+                if (existingDetail) existingDetail.remove();
+                modalContent.appendChild(detailView);
+
+                modal.style.display = 'flex';
+
+                // Mark as read automatically when viewed
+                if (msg.status !== 'read') {
+                    await markMessageAsRead(id, false);
+                }
+            } catch (err) {
+                alert('Erro ao carregar mensagem: ' + err.message);
+            }
+        }
+
+        function closeMsgModal() {
+            document.getElementById('productModal').style.display = 'none';
+            document.getElementById('product-form').style.display = 'block';
+            const detailView = document.getElementById('msg-detail-view');
+            if (detailView) detailView.remove();
+        }
+
+        async function markMessageAsRead(id, refresh = true) {
+            try {
+                const { error } = await supabaseClient
+                    .from('contact_messages')
+                    .update({ status: 'read' })
+                    .eq('id', id);
+
+                if (error) throw error;
+                if (refresh) loadMessages();
+                else {
+                    // Just update the local list if we don't want a full refresh
+                    const row = document.querySelector(`button[onclick*="${id}"]`).closest('tr');
+                    if (row) {
+                        row.style.background = '';
+                        row.style.fontWeight = 'normal';
+                        const statusPill = row.querySelector('.status-pill');
+                        if (statusPill) {
+                            statusPill.className = 'status-pill status-paid';
+                            statusPill.textContent = 'Lida';
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error marking message as read:', err);
+            }
+        }
+
+        async function deleteMessage(id) {
+            if (!confirm('Deseja realmente excluir esta mensagem permanentemente?')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('contact_messages')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadMessages();
+            } catch (err) {
+                alert('Erro ao excluir mensagem: ' + err.message);
             }
         }
 
