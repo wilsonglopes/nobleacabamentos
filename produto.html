@@ -343,7 +343,7 @@
                 } else {
                     priceHTML = `<span style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">R$ ${product.price.toFixed(2).replace('.', ',')}</span>`;
                 }
-                const unitsMatch = product.description ? product.description.match(/Caixa com \d+ (Unidades|Pe[çc]as)/i) : null;
+                const unitsMatch = product.description ? product.description.match(/(Caixa com \d+|1 Unidade) (Unidades|Pe[çc]as)?/i) : null;
                 const unitsText = unitsMatch ? unitsMatch[0] : 'Caixa com 12 Unidades';
                 priceHTML += `<span style="font-size: 1.3rem; color: var(--accent); font-weight: 800; display: block; margin-top: 0.5rem; text-transform: uppercase;">${unitsText}</span>`;
             } else {

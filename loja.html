@@ -277,7 +277,7 @@
                 const hasDiscount = product.original_price && product.original_price > product.price;
                 const discountPercent = hasDiscount ? Math.round((1 - (product.price / product.original_price)) * 100) : 0;
 
-                const unitsMatch = product.description ? product.description.match(/Caixa com \d+ (Unidades|Pe[çc]as)/i) : null;
+                const unitsMatch = product.description ? product.description.match(/(Caixa com \d+|1 Unidade) (Unidades|Pe[çc]as)?/i) : null;
                 const unitsText = unitsMatch ? unitsMatch[0] : 'Caixa com 12 Unidades';
 
                 const card = `

@@ -13,7 +13,7 @@ SELECT
     15 as length_cm,
     20 as width_cm,
     10 as height_cm,
-    'assets/produtos/terminal_' || color || '.jpg' as image_url,
+    CASE WHEN color = 'marfim' THEN 'assets/produtos/terminal_marfin.jpg' ELSE 'assets/produtos/terminal_' || color || '.jpg' END as image_url,
     '1 Unidade. Terminal de Cumeeira na cor ' || color || '. Produzido pela ' || brand || '. Peso: 0.42 kg | Dimensões: 20x15x10cm. Garantia de qualidade.' as description
 FROM (
     SELECT DISTINCT brand, color FROM products WHERE name ILIKE 'Terminal de Cumeeira%'
